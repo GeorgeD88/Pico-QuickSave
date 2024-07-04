@@ -1,0 +1,37 @@
+{
+    "spotify": {
+        "client_id": "30772e8117e044d4b5b3806b78a55724",
+        "client_secret": "ee09bfd69a484a1bb5a4cd1db62121cf",
+        "redirect_uri": "http://localhost:8888/callback"
+    },
+    "playlists": {
+        "main_playlist": "6xd0SXQ2gWA79yftTX18CN",
+        "other_playlist": "3fmBxuwJVIJCbalFrwe976"
+    },
+    "gpio_pins": {
+        "led_save": 0,
+        "led_alert": 0,
+        "led_error": 0,
+        "button_save_lib": 0,
+        "button_save_main": 0,
+        "button_save_other": 0,
+        "button_undo_save": 0
+    },
+    "wlan": [
+        {
+            "ssid": "first priority wifi",
+            "password": "",
+            "mdns": "hostname??"
+        },
+        {
+            "ssid": "second priority wifi",
+            "password": "",
+            "mdns": "hostname??"
+        },
+        {
+            "ssid": "index N priority wifi",
+            "password": "",
+            "mdns": "hostname??"
+        }
+    ]
+}
