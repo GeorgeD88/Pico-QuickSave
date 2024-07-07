@@ -22,8 +22,6 @@ class QuickSaveController:
         self.other_playlist_id = other_playlist_id
 
         # Keep local record of playlist contents to avoid adding duplicate songs
-        # TODO: remove quicksaver's version and instead make a reference to this version,
-        # then only the controller has to add saves, rather than make the change in 2 places.
         self.main_plist_tracks = set(self.client.get_playlist_tracks(main_playlist_id))
         self.other_plist_tracks = set(self.client.get_playlist_tracks(other_playlist_id))
 
