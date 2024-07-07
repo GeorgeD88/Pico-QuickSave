@@ -18,8 +18,8 @@ class QuickSaver:
         self.controller = QuickSaveController(main_playlist_id, other_playlist_id)  # Backend
 
         # Playlist IDs
-        self.main_playlist = main_playlist_id
-        self.other_playlist = other_playlist_id
+        self.main_playlist_id = main_playlist_id
+        self.other_playlist_id = other_playlist_id
 
         # Keeps log of tracks added during the session
         self.main_track_log = []
@@ -31,6 +31,8 @@ class QuickSaver:
         # Start input listener and notifier
         self.input_listener.start_listener()
         # TODO: start notifier as well
+        # TODO: start spotify_client refreshing loop (this is what will keep the program was closing)
+        # self.controller.start_refresh_smthn
 
     # === Quick Saving ===
     def toggle_like(self) -> tuple[str, str]:
@@ -98,12 +100,12 @@ class QuickSaver:
             print('saved track to library' if result is True else 'removed track from library')
         # Quick saves to the main playlist
         elif button_pressed is SAVE_MAIN:
-            result = self.quick_save(self.main_playlist)
+            result = self.quick_save(self.main_playlist_id)
             if result is not None:
                 print('quick saved to main playlist')
         # Quick saves to the other playlist
         elif button_pressed is SAVE_OTHER:
-            result = self.quick_save(self.other_playlist)
+            result = self.quick_save(self.other_playlist_id)
             if result is not None:
                 print('quick saved to other playlist')
         # Undoes the last quick save
@@ -136,4 +138,4 @@ class QuickSaver:
     # === Helpers ===
     def get_track_log(self, playlist_id: str) -> list[str]:
         """ Gets the corresponding track log based on the given playlist ID. """
-        return self.main_track_log if playlist_id is self.main_playlist else self.other_track_log
+        return self.main_track_log if playlist_id is self.main_playlist_id else self.other_track_log
