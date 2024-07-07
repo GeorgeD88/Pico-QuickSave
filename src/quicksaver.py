@@ -84,9 +84,10 @@ class QuickSaver:
         # A chance to remove it. that's why we have to check if the track is in the log before attempting to remove it.
 
         # Removes last added track from respective playlist log if it's not empty and matches the removed track
-        track_log = self.get_local_track_list(result[1])
-        if len(track_log) > 0 and result[0] in track_log:
-            track_log.remove(result[0])
+        track_list = self.get_local_track_list(result[1])
+        # FIXME: Check this line if you're having problems, it was switched from track log
+        if len(track_list) > 0 and result[0] in track_list:
+            track_list.remove(result[0])
 
         return result
 
