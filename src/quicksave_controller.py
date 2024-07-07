@@ -17,32 +17,18 @@ class QuickSaveController:
             other_playlist_id (str): The playlist for tracks that do not belong in the main playlist.
         """
 
-        cache_tokens = cache.get_token_cache()
-        self.api_tokens = {
-            'access_token': cache_tokens['access_token'],
-            'refresh_token': cache_tokens['refresh_token']
-        }
-
-        self.client = SpotifyClient(*self.load_config())
-        self.main_playlist = main_playlist_id
-        self.other_playlist = other_playlist_id
+        self.client = SpotifyClient()
+        self.main_playlist_id = main_playlist_id
+        self.other_playlist_id = other_playlist_id
 
         # Keep local record of playlist contents to avoid adding duplicate songs
-        self.main_plist_tracks = set(self.client.get_playlist_tracks(self.api_tokens, main_playlist_id))
-        self.other_plist_tracks = set(self.client.get_playlist_tracks(self.api_tokens, other_playlist_id))
+        # TODO: remove quicksaver's version and instead make a reference to this version,
+        # then only the controller has to add saves, rather than make the change in 2 places.
+        self.main_plist_tracks = set(self.client.get_playlist_tracks(main_playlist_id))
+        self.other_plist_tracks = set(self.client.get_playlist_tracks(other_playlist_id))
 
-        # Holds the last saved track and its playlist (track_id, playlist_id)
+        # Holds the last saved track and its playlist in a tuple (track_id, playlist_id)
         self.last_save = None
-
-    def load_config(self):
-        """ Loads the Spotify API info from the config file. """
-
-        with open(CONFIG, 'r') as read_file:
-            sp_config = ujson.load(read_file)['spotify']
-
-        return (sp_config['client_id'],
-                sp_config['client_secret'],
-                sp_config['redirect_uri'])
 
     # === Quick Saving ===
     def toggle_like(self) -> tuple[str, str]:
@@ -118,4 +104,4 @@ class QuickSaveController:
     # === Helpers ===
     def get_local_track_list(self, playlist_id: str) -> set[str]:
         """ Gets the corresponding local track list based on the given playlist ID. """
-        return self.main_plist_tracks if playlist_id is self.main_playlist else self.other_plist_tracks
+        return self.main_plist_tracks if playlist_id is self.main_playlist_id else self.other_plist_tracks
