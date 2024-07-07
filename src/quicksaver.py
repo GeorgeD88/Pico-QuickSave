@@ -21,9 +21,9 @@ class QuickSaver:
         self.main_playlist_id = main_playlist_id
         self.other_playlist_id = other_playlist_id
 
-        # Keeps log of tracks added during the session
-        self.main_track_log = []
-        self.other_track_log = []
+        # Get references to local record of playlist contents from QuickSaver controller
+        self.main_plist_tracks = self.controller.main_plist_tracks
+        self.other_plist_tracks = self.controller.other_plist_tracks
 
     def start_quicksaver(self):
         """ Starts running QuickSaver by starting
@@ -51,7 +51,7 @@ class QuickSaver:
         return result
 
     def quick_save(self, playlist_id: str) -> tuple[str, str]:
-        """ Quick saves currently playing track to given playlist and use library. """
+        """ Quick saves currently playing track to given playlist and user library. """
 
         # Quick save currently playing track and save result
         result = self.controller.quick_save(playlist_id)
@@ -65,7 +65,6 @@ class QuickSaver:
             return None
         # Song was successfully saved
         else:
-            self.get_track_log(playlist_id).append(result[0])  # add track to respective playlist log
             self.notifier.trigger_song_saved_indicator()
 
         return result
@@ -85,9 +84,9 @@ class QuickSaver:
         # A chance to remove it. that's why we have to check if the track is in the log before attempting to remove it.
 
         # Removes last added track from respective playlist log if it's not empty and matches the removed track
-        track_log = self.get_track_log(result[1])
-        if len(track_log) > 0 and track_log[-1] == result[0]:
-            track_log.pop()
+        track_log = self.get_local_track_list(result[1])
+        if len(track_log) > 0 and result[0] in track_log:
+            track_log.remove(result[0])
 
         return result
 
@@ -113,29 +112,12 @@ class QuickSaver:
             result = self.undo_last_save()
             if result is not None:
                 print('undid last quick save')
-        # Exports the session's track logs and quits the app
+        # Quits the app
         elif button_pressed is QUIT_APP:
-            print('exporting session track logs and quitting app')
-            # self.export_session()
+            print('quitting app')
             self.input_listener.stop_listener()
 
-    # === Exporting Logs ===
-    def export_session(self):
-        """ Exports the session's track logs to JSON. """
-
-        # Terminate function if there are no logs to export
-        if len(self.main_track_log) == 0 and len(self.other_track_log) == 0:
-            return
-
-        # Get the existing session logs, build the current session export, and append it to the sessions
-        sessions = utils.read_json(EXPORT_FILENAME)
-        curr_session = {'main': self.main_track_log, 'other': self.other_track_log}
-        sessions.append(curr_session)
-
-        # Write the updated session logs to JSON
-        utils.write_json(sessions, EXPORT_FILENAME)
-
     # === Helpers ===
-    def get_track_log(self, playlist_id: str) -> list[str]:
-        """ Gets the corresponding track log based on the given playlist ID. """
-        return self.main_track_log if playlist_id is self.main_playlist_id else self.other_track_log
+    def get_local_track_list(self, playlist_id: str) -> set[str]:
+        """ Gets the corresponding local track list based on the given playlist ID. """
+        return self.main_plist_tracks if playlist_id is self.main_playlist_id else self.other_plist_tracks
