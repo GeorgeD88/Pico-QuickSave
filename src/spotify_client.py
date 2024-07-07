@@ -57,11 +57,26 @@ class SpotifyClient:
 
     def _load_cache_tokens(self):
         """ Loads the access and refresh tokens from the cache file. """
+        cache_tokens = self._except_enoent_error(cache.get_token_cache)
+        self.api_tokens = {
+            'access_token': cache_tokens['access_token'],
+            'refresh_token': cache_tokens['refresh_token']
+        }
+
+    def _load_api_creds(self):
+        """ Loads the Spotify API credentials from the config file. """
+        config_file = self._except_enoent_error(config.get_spotify_creds)
+        self.client_id = config_file['client_id']
+        self.client_secret = config_file['client_secret']
+        self.redirect_uri = config_file['redirect_uri']
+
+    def _except_enoent_error(self, try_func):
+        """ Tries to run the given the function and catches ENOENT errors. """
         try:
-            cache_tokens = cache.get_token_cache()
+            try_func()
         except OSError as e:
             if e.errno == errno.ENOENT:#2
-                print(f'got {errno.errorcode[e.errno]}, and message of {e.strerror}')
+                print(f'[{errno.errorcode[e.errno]}]', e.args[1], e.args[2])
                 # There is no token cache file, we can't do anything about it
                 # TODO: indicate with lights
                 # TODO: maybe figure out how to log to a file, w/ time
@@ -71,29 +86,9 @@ class SpotifyClient:
                 # Unknown error, output it and log, close app, teardown, etc.
                 pass
 
-        self.api_tokens = {
-            'access_token': cache_tokens['access_token'],
-            'refresh_token': cache_tokens['refresh_token']
-        }
-
-    def _load_api_creds(self):
-        """ Loads the Spotify API credentials from the config file. """
-        # try:
-        config_file = config.get_spotify_creds()
-        # except FileNotFoundError:
-            # TODO: indicate with lights
-            # TODO: log to a file, w/ the current time
-            # TODO: close app, figure out if I need a teardown procedure
-            # pass
-
-        self.client_id = config_file['client_id']
-        self.client_secret = config_file['client_secret']
-        self.redirect_uri = config_file['redirect_uri']
-
     def _validate_api_reply(self, api_call_name, api_reply, ok_status_list = [],
                             warn_status_list = [], raise_status_list = []):
         """ Validates API response based on provided statuses (ok, warn, raise). """
-
         print("{} status received: {}".format(api_call_name, api_reply['status_code']))
 
         # Status code is ok
