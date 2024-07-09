@@ -54,6 +54,7 @@ class SpotifyClient:
     def __init__(self):
         self._load_cache_tokens()
         self._load_api_creds()
+        # TODO: get notifier here somehow
 
     def _load_cache_tokens(self):
         """ Loads the access and refresh tokens from the cache file. """
@@ -70,21 +71,41 @@ class SpotifyClient:
         self.client_secret = config_file['client_secret']
         self.redirect_uri = config_file['redirect_uri']
 
-    def _except_enoent_error(self, try_func):
-        """ Tries to run the given the function and catches ENOENT errors. """
+    def _except_os_error(self, try_func):
+        """ Tries to run the given the function while catching OS errors. """
         try:
             try_func()
         except OSError as e:
-            if e.errno == errno.ENOENT:#2
-                print(f'[{errno.errorcode[e.errno]}]', e.args[1], e.args[2])
-                # There is no token cache file, we can't do anything about it
-                # TODO: indicate with lights
-                # TODO: maybe figure out how to log to a file, w/ time
-                # TODO: close app, figure out if I need a teardown procedure
-                pass
+            # FIXME: probably add time to print statements, '[XX:XX:XX] error received'
+            print(f'[{errno.errorcode[e.errno]}] error received, handling accordingly...')
+            # Handle FileNotFoundError
+            if e.errno == errno.ENOENT:
+                self._handle_enoent_error(e)
+            # Unexpected error
             else:
-                # Unknown error, output it and log, close app, teardown, etc.
-                pass
+                self._handle_unexpected_error(e)
+
+    # TODO: this can probably be changed to handle_os_error (expected error),
+    # if we don't end up adding anything that's specific to FileNotFoundErrors
+    def _handle_enoent_error(self, e: OSError):
+        """ Handles ENOENT errors that were safely caught (FileNotFoundError). """
+        print(f'[{errno.errorcode[e.errno]}]', e.args[1], e.args[2])
+        self.notifier.trigger_os_error()
+        # TODO: log to a file w/ time
+        # TODO: figure out if I need a teardown procedure
+        self.notifier.trigger_critical_error()
+        # TODO: close app
+
+    def _handle_unexpected_error(self, e: OSError):
+        """ Handles unexpected errors that were safely caught. """
+        print('Unexpected error received:')
+        self.notifier.trigger_unexpected_os_error()
+        # Unknown error, output it and log, close app, teardown, etc.
+        print('|'.join(e.args))
+        print('closing QuickSaver...')
+        self.notifier.trigger_critical_error()
+        # TODO: close app
+
 
     def _validate_api_reply(self, api_call_name, api_reply, ok_status_list = [],
                             warn_status_list = [], raise_status_list = []):
