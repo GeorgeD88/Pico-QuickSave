@@ -28,12 +28,11 @@ class QuickSaveController:
         # Holds the last saved track and its playlist in a tuple (track_id, playlist_id)
         self.last_save = None
 
-    # === Quick Saving ===
-    def toggle_like(self) -> tuple[str, str]:
+    def toggle_like(self) -> tuple[str, bool]:
         """ Toggles currently playing track's library save (likes/unlikes track).
 
         Returns:
-            tuple[str, str]: Returns the ID of the currently playing track, and whether it's saved now.
+            tuple[str, bool]: Returns the ID of the currently playing track, and whether it's saved now.
         """
 
         track_id = self.client.get_currently_playing(self.api_tokens)
@@ -99,7 +98,6 @@ class QuickSaveController:
 
         return track_id, playlist_id
 
-    # === Helpers ===
     def get_local_track_list(self, playlist_id: str) -> set[str]:
         """ Gets the corresponding local track list based on the given playlist ID. """
         return self.main_plist_tracks if playlist_id is self.main_playlist_id else self.other_plist_tracks
