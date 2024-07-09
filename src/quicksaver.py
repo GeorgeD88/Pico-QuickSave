@@ -21,6 +21,7 @@ class QuickSaver:
         self.main_playlist_id = main_playlist_id
         self.other_playlist_id = other_playlist_id
 
+        # FIXME: I don't think this will be used, so remove it later
         # Get references to local record of playlist contents from QuickSaver controller
         self.main_plist_tracks = self.controller.main_plist_tracks
         self.other_plist_tracks = self.controller.other_plist_tracks
@@ -34,8 +35,7 @@ class QuickSaver:
         # TODO: start spotify_client refreshing loop (this is what will keep the program was closing)
         # self.controller.start_refresh_smthn
 
-    # === Quick Saving ===
-    def toggle_like(self) -> tuple[str, str]:
+    def toggle_like(self) -> tuple[str, bool]:
         """ Toggles the currently playing track's library save (likes/unlikes track). """
 
         # Toggle like of currently playing track and save result
@@ -80,18 +80,8 @@ class QuickSaver:
             self.notifier.trigger_max_undo_warning()
             return None
 
-        # NOTE: if the value of last_save was a duplicate, then it wasn't actually added and is only there to give the user
-        # A chance to remove it. that's why we have to check if the track is in the log before attempting to remove it.
-
-        # Removes last added track from respective playlist log if it's not empty and matches the removed track
-        track_list = self.get_local_track_list(result[1])
-        # FIXME: Check this line if you're having problems, it was switched from track log
-        if len(track_list) > 0 and result[0] in track_list:
-            track_list.remove(result[0])
-
         return result
 
-    # === Input Listener ===
     def process_input(self, button_pressed: str):
         """ Executes the corresponding action based on the callback received. """
         # Saves only to user's library (likes track)
@@ -118,7 +108,6 @@ class QuickSaver:
             print('quitting app')
             self.input_listener.stop_listener()
 
-    # === Helpers ===
     def get_local_track_list(self, playlist_id: str) -> set[str]:
         """ Gets the corresponding local track list based on the given playlist ID. """
         return self.main_plist_tracks if playlist_id is self.main_playlist_id else self.other_plist_tracks
