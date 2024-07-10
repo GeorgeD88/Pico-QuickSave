@@ -51,10 +51,11 @@ handle the refreshing access token and such because we're not using a wrapper li
 
 class SpotifyClient:
 
-    def __init__(self):
+    def __init__(self, notifier, logger):
         self._load_cache_tokens()
         self._load_api_creds()
-        # TODO: get notifier here somehow
+        self.notifier = notifier
+        self.logger = logger
 
     def _load_cache_tokens(self):
         """ Loads the access and refresh tokens from the cache file. """
