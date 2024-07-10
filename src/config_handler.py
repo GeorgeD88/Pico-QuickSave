@@ -73,6 +73,10 @@ def get_playlist_ids() -> dict:
     """ Retrieves and returns the playlist IDs from the config file. """
     return get_config_value('playlists')
 
+def get_log_filename() -> str:
+    """ Retrieves and returns the log filename from the config file. """
+    return get_config_value('log_filename')
+
 # TODO: continue rewriting the handler for the config file
 def get_access_token() -> str:
     """ Retrieves and returns the access token from the config file. """
