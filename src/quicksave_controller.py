@@ -10,14 +10,15 @@ CONFIG = "config.json"
 class QuickSaveController:
     """ Controller that handles the main quick saving functionality of the app (backend). """
 
-    def __init__(self, main_playlist_id: str, other_playlist_id: str):
+    def __init__(self, main_playlist_id: str, other_playlist_id: str, notifier, logger):
         """
         Args:
             main_playlist_id (str): The main playlist to quick save tracks to.
             other_playlist_id (str): The playlist for tracks that do not belong in the main playlist.
         """
 
-        self.client = SpotifyClient()
+        # TODO: organize/group all the class variables better
+        self.client = SpotifyClient(notifier, logger)
         self.main_playlist_id = main_playlist_id
         self.other_playlist_id = other_playlist_id
 
