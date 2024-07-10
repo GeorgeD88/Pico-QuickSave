@@ -4,9 +4,9 @@ import os
 
 
 class Logger:
-    def __init__(self, filename, console_output=True):
+    def __init__(self, filename, console_output=False):
         self.filename = filename
-        self.console_output = console_output
+        self.console_output = console_output  # FIXME: not used, remove later if not needed
         self.console_available = self.check_console()
         self.file = open(self.filename, 'a')  # Keep the file open
 
