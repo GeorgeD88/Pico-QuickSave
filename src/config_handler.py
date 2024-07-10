@@ -66,32 +66,32 @@ def set_config_value(key: str, new_value):
     set_config(config)
 
 def get_spotify_creds() -> dict:
-    """ Retrieves and returns the spotify creds from the config file. """
+    """ Retrieves and returns the spotify creds. """
     return get_config_value('spotify')
 
 def get_playlist_ids() -> dict:
-    """ Retrieves and returns the playlist IDs from the config file. """
+    """ Retrieves and returns the playlist IDs. """
     return get_config_value('playlists')
 
 def get_log_filename() -> str:
-    """ Retrieves and returns the log filename from the config file. """
+    """ Retrieves and returns the log filename. """
     return get_config_value('log_filename')
 
 # TODO: continue rewriting the handler for the config file
 def get_access_token() -> str:
-    """ Retrieves and returns the access token from the config file. """
+    """ Retrieves and returns the access token. """
     return get_token_cache_value('access_token')
 
 def set_access_token(new_access_token: str):
-    """ Stores or updates the given access token in the config file. """
+    """ Stores or updates the given access token. """
     set_token_cache_value('access_token', new_access_token)
 
 def get_refresh_token() -> str:
-    """ Retrieves and returns the refresh token from the config file. """
+    """ Retrieves and returns the refresh token. """
     return get_token_cache_value('refresh_token')
 
 def set_refresh_token(new_refresh_token: str):
-    """ Stores or updates the given refresh token in the config file. """
+    """ Stores or updates the given refresh token. """
     set_token_cache_value('refresh_token', new_refresh_token)
 
 # TODO: brainstorm how to approach setters/getters of all parts of the config.
