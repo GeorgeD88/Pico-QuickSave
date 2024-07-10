@@ -2,6 +2,7 @@ from quicksave_controller import QuickSaveController, IS_DUPE
 from raspi_listener import RasPiListener
 from raspi_notifier import RasPiNotifier
 import config_handler as config
+from logger import Logger
 import utils
 
 # Constants
@@ -14,21 +15,18 @@ class QuickSaver:
 
     def __init__(self):
 
-        # Initializes the separate components
+        # Initialize all components of the QuickSaver application
         print('initializing input listener, controller, and notifier...')
-        self.input_listener = RasPiListener(self.process_input)  # Frontend
-        self.notifier = RasPiNotifier()  # Triggers notifiers/responses (such as notifications/LEDs)
-        self.controller = QuickSaveController(main_playlist_id, other_playlist_id, self.notifier)  # Backend
+        self.input_listener = RasPiListener(self.process_input)
+        self.notifier = RasPiNotifier()
+        self.logger = Logger(config.get_log_filename())
+        self.controller = QuickSaveController(main_playlist_id, other_playlist_id,
+                                              self.notifier, self.logger)
 
-        # Playlist IDs
+        # Set the playlist IDs
         plist_ids = config.get_playlist_ids()
         self.main_playlist_id = plist_ids['main_playlist']
         self.other_playlist_id = plist_ids['other_playlist']
-
-        # FIXME: I don't think this will be used, so remove it later
-        # Get references to local record of playlist contents from QuickSaver controller
-        self.main_plist_tracks = self.controller.main_plist_tracks
-        self.other_plist_tracks = self.controller.other_plist_tracks
 
     def start_quicksaver(self):
         """ Starts running QuickSaver by starting
