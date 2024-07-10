@@ -10,6 +10,7 @@ EMPTY_CONFIG = {
         "redirect_uri": "http://localhost:8888/callback"
     },
     "playlists": {"main_playlist": None, "other_playlist": None},
+    "log_filename": "quicksaver.log",
     "gpio_pins": {
         "led_save": 0,
         "led_alert": 0,

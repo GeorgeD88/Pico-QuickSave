@@ -8,6 +8,7 @@
         "main_playlist": "6xd0SXQ2gWA79yftTX18CN",
         "other_playlist": "3fmBxuwJVIJCbalFrwe976"
     },
+    "log_filename": "quicksaver.log",
     "gpio_pins": {
         "led_save": 0,
         "led_alert": 0,
