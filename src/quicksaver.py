@@ -1,4 +1,7 @@
 from quicksave_controller import QuickSaveController, IS_DUPE
+from raspi_listener import RasPiListener
+from raspi_notifier import RasPiNotifier
+import config_handler as config
 import utils
 
 # Constants
@@ -9,17 +12,18 @@ EXPORT_FILENAME = "session_exports"
 class QuickSaver:
     """ The main central component that connects all the components together that make the app.  """
 
-    def __init__(self, input_listener, notifier, main_playlist_id: str, other_playlist_id: str):
+    def __init__(self):
 
         # Initializes the separate components
         print('initializing input listener, controller, and notifier...')
-        self.input_listener = input_listener(self.process_input)  # Frontend
-        self.notifier = notifier()  # Triggers notifiers/responses (such as notifications/LEDs)
-        self.controller = QuickSaveController(main_playlist_id, other_playlist_id)  # Backend
+        self.input_listener = RasPiListener(self.process_input)  # Frontend
+        self.notifier = RasPiNotifier()  # Triggers notifiers/responses (such as notifications/LEDs)
+        self.controller = QuickSaveController(main_playlist_id, other_playlist_id, self.notifier)  # Backend
 
         # Playlist IDs
-        self.main_playlist_id = main_playlist_id
-        self.other_playlist_id = other_playlist_id
+        plist_ids = config.get_playlist_ids()
+        self.main_playlist_id = plist_ids['main_playlist']
+        self.other_playlist_id = plist_ids['other_playlist']
 
         # FIXME: I don't think this will be used, so remove it later
         # Get references to local record of playlist contents from QuickSaver controller
@@ -31,8 +35,8 @@ class QuickSaver:
             the input listener and notifier loops. """
         # Start input listener and notifier
         self.input_listener.start_listener()
-        # TODO: start notifier as well
-        # TODO: start spotify_client refreshing loop (this is what will keep the program was closing)
+        self.notifier.start_notifier()
+        # TODO: start spotify_client refreshing loop (prevents the program from closing)
         # self.controller.start_refresh_smthn
 
     def toggle_like(self) -> tuple[str, bool]:
@@ -84,6 +88,7 @@ class QuickSaver:
 
     def process_input(self, button_pressed: str):
         """ Executes the corresponding action based on the callback received. """
+
         # Saves only to user's library (likes track)
         if button_pressed is TOGGLE_LIKE:
             result = self.toggle_like()[1]  # whether track was saved/removed
