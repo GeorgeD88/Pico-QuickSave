@@ -19,6 +19,7 @@ EMPTY_CONFIG = {
         "button_save_other": 0,
         "button_undo_save": 0
     },
+    # List of WiFi details starting with the highest priority network
     "wlan": [{"ssid": None, "password": None, "mdns": None}]
 }
 
@@ -66,6 +67,10 @@ def set_config_value(key: str, new_value):
 def get_spotify_creds() -> dict:
     """ Retrieves and returns the spotify creds from the config file. """
     return get_config_value('spotify')
+
+def get_playlist_ids() -> dict:
+    """ Retrieves and returns the playlist IDs from the config file. """
+    return get_config_value('playlists')
 
 # TODO: continue rewriting the handler for the config file
 def get_access_token() -> str:
