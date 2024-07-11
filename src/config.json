@@ -10,29 +10,30 @@
     },
     "log_filename": "quicksaver.log",
     "gpio_pins": {
-        "led_save": 0,
-        "led_alert": 0,
-        "led_error": 0,
-        "button_save_lib": 0,
-        "button_save_main": 0,
-        "button_save_other": 0,
-        "button_undo_save": 0
+        "led_success": 7,
+        "led_alert": 15,
+        "led_error": 20,
+        "button_save_lib": 10,
+        "button_save_main": 11,
+        "button_save_other": 12,
+        "button_undo_save": 13
     },
     "wlan": [
         {
-            "ssid": "first priority wifi",
-            "password": "",
-            "mdns": "hostname??"
+            "ssid": "Roy & george 2",
+            "password": "d0uj@iji@21"
         },
         {
-            "ssid": "second priority wifi",
-            "password": "",
-            "mdns": "hostname??"
+            "ssid": "Makaveli",
+            "password": "Sh3llH@cks"
         },
         {
-            "ssid": "index N priority wifi",
-            "password": "",
-            "mdns": "hostname??"
+            "ssid": "Samir",
+            "password": "456@#776"
+        },
+        {
+            "ssid": "samir1",
+            "password": "456@#776"
         }
     ]
 }
