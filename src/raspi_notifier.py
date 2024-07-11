@@ -12,14 +12,13 @@ DURATION = 1  # Duration for standard indicators and warnings
 class RasPiNotifier:
     """ RasPi notifier class that allows the app to trigger LED responses on the Pi. """
 
-    def __init__(self):
+    def __init__(self, success_led_pin: int, alert_led_pin: int, error_led_pin: int):
         # Set GPIO pin numbers
-        self.success_led = LED(16)  # Green
-        self.warning_led = LED(20)  # Yellow
-        # ! I want to add that yellow LED to provide more detail and because there's room
-        # currently it's still just green and red LED, but later I can add more info using the yellow LED.
-        # NOTE: maybe move the red LED uses to yellow LED and then red is for app errors, like FileNotFound
-        self.error_led = LED(20)    # Red
+        self.success_led = success_led_pin
+        self.alert_led = alert_led_pin
+        self.error_led = error_led_pin
+
+        # FIXME: maybe move the red (error) LED uses to yellow (alert) LED and then red is for app errors, like FileNotFound
 
     def start_notifier(self):
         """ Starts the notifier by waiting for signals. """
@@ -39,11 +38,11 @@ class RasPiNotifier:
         self.flash_led(self.success_led, duration)
 
     def trigger_duplicate_song_warning(self, duration: int = DURATION):
-        """ Flashes the warning LED to warn that a duplicate song was attempted to be added. """
+        """ Flashes the alert LED to warn that a duplicate song was attempted to be added. """
         self.flash_led(self.error_led, duration)
 
     def trigger_max_undo_warning(self, duration: int = DURATION):
-        """ Flashes the warning LED to warn that only one undo is allowed per save. """
+        """ Flashes the alert LED to warn that only one undo is allowed per save. """
         self.flash_led(self.error_led, duration)
 
     def trigger_os_error(self, duration: int = DURATION):
@@ -71,11 +70,11 @@ class RasPiNotifier:
 
         # Hold all the LEDs on for half the duration
         self.error_led.on()
-        self.warning_led.on()
+        self.alert_led.on()
         self.success_led.on()
         sleep(duration/2)
         self.error_led.off()
-        self.warning_led.off()
+        self.alert_led.off()
         self.success_led.off()
 
     def trigger_ready_lights(self, duration: int = 1.5, blink_time=0.1):

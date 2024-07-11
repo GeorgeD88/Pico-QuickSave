@@ -10,14 +10,16 @@ from actions import TOGGLE_LIKE, SAVE_MAIN, SAVE_OTHER, UNDO_SAVE, QUIT_APP
 
 class RasPiListener:
 
-    def __init__(self, button_callback):
+    def __init__(self, button_callback, like_button_pin: int, main_button_pin: int,
+                                        other_button_pin: int, undo_button_pin: int):
+
         self.callback = button_callback
 
         # Set GPIO pin numbers
-        self.toggle_like_button = Button(25)
-        self.save_main_button = Button(8)
-        self.save_other_button = Button(7)
-        self.undo_last_button = Button(1)
+        self.toggle_like_button = like_button_pin
+        self.save_main_button = main_button_pin
+        self.save_other_button = other_button_pin
+        self.undo_last_button = undo_button_pin
 
         # Map the buttons to the actions
         self.toggle_like_button.when_pressed = self.toggle_like
