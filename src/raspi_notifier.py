@@ -14,7 +14,7 @@ class RasPiNotifier:
 
     def __init__(self, gpio_pins: dict):
         # Set GPIO pin numbers
-        self.success_led = gpio_pins['led_save']
+        self.success_led = gpio_pins['led_success']
         self.alert_led = gpio_pins['led_alert']
         self.error_led = gpio_pins['led_error']
 
