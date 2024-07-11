@@ -77,6 +77,10 @@ def get_log_filename() -> str:
     """ Retrieves and returns the log filename. """
     return get_config_value('log_filename')
 
+def get_gpio_pin_numbers() -> str:
+    """ Retrieves and returns the GPIO pin numbers. """
+    return get_config_value('gpio_pins')
+
 # TODO: continue rewriting the handler for the config file
 def get_access_token() -> str:
     """ Retrieves and returns the access token. """
