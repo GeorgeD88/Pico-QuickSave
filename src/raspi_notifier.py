@@ -12,11 +12,11 @@ DURATION = 1  # Duration for standard indicators and warnings
 class RasPiNotifier:
     """ RasPi notifier class that allows the app to trigger LED responses on the Pi. """
 
-    def __init__(self, success_led_pin: int, alert_led_pin: int, error_led_pin: int):
+    def __init__(self, gpio_pins: dict):
         # Set GPIO pin numbers
-        self.success_led = success_led_pin
-        self.alert_led = alert_led_pin
-        self.error_led = error_led_pin
+        self.success_led = gpio_pins['led_save']
+        self.alert_led = gpio_pins['led_alert']
+        self.error_led = gpio_pins['led_error']
 
         # FIXME: maybe move the red (error) LED uses to yellow (alert) LED and then red is for app errors, like FileNotFound
 

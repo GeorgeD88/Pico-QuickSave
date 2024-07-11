@@ -17,8 +17,9 @@ class QuickSaver:
 
         # Initialize all components of the QuickSaver application
         print('initializing input listener, controller, and notifier...')
-        self.input_listener = RasPiListener(self.process_input)
-        self.notifier = RasPiNotifier()
+        self.input_listener = RasPiListener(self.process_input,
+                                            config.get_gpio_pin_numbers())
+        self.notifier = RasPiNotifier(config.get_gpio_pin_numbers())
         self.logger = Logger(config.get_log_filename())
         self.controller = QuickSaveController(main_playlist_id, other_playlist_id,
                                               self.notifier, self.logger)
