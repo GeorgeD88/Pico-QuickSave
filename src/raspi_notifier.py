@@ -6,9 +6,6 @@ from time import sleep
 DURATION = 1  # Duration for standard indicators and warnings
 
 
-""" NOTE: Pulled from the OG QuickSave. I'm going to convert this to work with the Pico,
-    as well as add functions or refactor as needed. """
-
 class RasPiNotifier:
     """ RasPi notifier class that allows the app to trigger LED responses on the Pi. """
 
@@ -18,8 +15,6 @@ class RasPiNotifier:
         self.alert_led = LED(gpio_pins['led_alert'])
         self.error_led = LED(gpio_pins['led_error'])
 
-        # FIXME: maybe move the red (error) LED uses to yellow (alert) LED and then red is for app errors, like FileNotFound
-
     def start_notifier(self):
         """ Starts the notifier by waiting for signals. """
         self.trigger_ready_lights()
@@ -27,8 +22,6 @@ class RasPiNotifier:
 
     def _flash_led(self, flashing_led: LED, duration: float):
         """ Flashes the given LED for the specified duration. """
-        # TODO: check if the following is the most efficient way to do this,
-        # * or if there's a function for this
         flashing_led.on()
         sleep(duration)
         flashing_led.off()
@@ -52,18 +45,11 @@ class RasPiNotifier:
 
     def trigger_os_error(self):
         """ Flashes the error LED repeatedly to indicate an OS error was received. """
-        # TODO: flash the error LED 4 times (total 1 sec)
-        # Time for each individual flash (maybe for strictly the on time, or for the total on/off time)
-        # ?flash_time = None #0.25
-        # flash as many times needed for given duration
-        # ?for _ in range(duration // flash_time):  # FIXME: maybe 'ceiling' the number instead of floor??
-        # because floor might reduce the number a lot if duration and/or flash time are small
-            # ?self._flash_led(self.error_led, flash_time)
-            # ?sleep(0)  # TODO
-        self.self._quick_flash_led_repeatedly(self.error_led, 4)
+        self._quick_flash_led_repeatedly(self.error_led, 4)
 
     def trigger_unexpected_os_error(self, duration: float = DURATION):
         """ Flashes the __ to indicate an unexpected OS error was received. """
+        # TODO:
         pass
 
     def trigger_critical_error(self):
