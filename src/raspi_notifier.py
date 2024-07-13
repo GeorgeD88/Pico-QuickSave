@@ -34,14 +34,9 @@ class RasPiNotifier:
         flashing_led.off()
 
     def _quick_flash_led_repeatedly(self, flashing_led: LED, flash_count: int,
-                                    flash_speed: float = 0.126):
-                                    # 0.115 is very good for looking quick
+                                    flash_speed: float = 0.13):
         """ Repeatedly flashes the given LED for the specified number of times. """
-        for _ in range(flash_count-1):
-            self._flash_led(flashing_led, flash_speed)
-            sleep(flash_speed)  # Flashes off for the same time
-        self._flash_led(flashing_led, flash_speed)
-
+        flashing_led.blink(on_time=flash_speed, n=flash_count, wait=True)
 
     def trigger_song_saved_success(self, duration: float = DURATION):
         """ Flashes the success LED to indicate that a song was saved. """
