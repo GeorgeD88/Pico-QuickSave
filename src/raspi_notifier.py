@@ -31,7 +31,17 @@ class RasPiNotifier:
         # * or if there's a function for this
         flashing_led.on()
         sleep(duration)
-        triggering_led.off()
+        flashing_led.off()
+
+    def _quick_flash_led_repeatedly(self, flashing_led: LED, flash_count: int,
+                                    flash_speed: float = 0.126):
+                                    # 0.115 is very good for looking quick
+        """ Repeatedly flashes the given LED for the specified number of times. """
+        for _ in range(flash_count-1):
+            self._flash_led(flashing_led, flash_speed)
+            sleep(flash_speed)  # Flashes off for the same time
+        self._flash_led(flashing_led, flash_speed)
+
 
     def trigger_song_saved_success(self, duration: float = DURATION):
         """ Flashes the success LED to indicate that a song was saved. """
@@ -55,6 +65,7 @@ class RasPiNotifier:
         # because floor might reduce the number a lot if duration and/or flash time are small
             self.flash_led(self.error_led, flash_time)
             sleep(0)  # TODO
+        self.self._quick_flash_led_repeatedly(self.error_led, 4)
 
     def trigger_unexpected_os_error(self, duration: float = DURATION):
         """ Flashes the __ to indicate an unexpected OS error was received. """
