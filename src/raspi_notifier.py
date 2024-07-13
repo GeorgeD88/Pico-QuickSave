@@ -107,10 +107,17 @@ class RasPiNotifier:
 
     def trigger_ready_lights(self, blink_count: int = 6, blink_time: float = 0.1):
         """ Triggers a sequence w/ all LEDs to indicate that the app is ready. """
-        self.success_led.blink(on_time=blink_time, off_time=blink_time)
+
+        # Initiate blinking of the success and error LEDs
+        self.success_led.blink(on_time=blink_time)
+        self.error_led.blink(on_time=blink_time)
+
+       # Let the LEDs blink once, then start blinking the alert LED
         sleep(blink_time)
-        self.duplicate_led.blink(on_time=blink_time, off_time=blink_time)
-        sleep(duration-blink_time)
+        self.alert_led.blink(on_time=blink_time)
+
+        # Let the sequence continue for the remaining blink count, then turn off all LEDs
+        sleep(blink_time*(blink_count-1))
         self.success_led.off()
-        self.duplicate_led.off()
-        # TODO: will need to include the 3rd light I want to add
+        self.error_led.off()
+        self.alert_led.off()
