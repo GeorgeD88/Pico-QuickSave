@@ -88,7 +88,24 @@ class RasPiNotifier:
         self.alert_led.off()
         self.success_led.off()
 
-    def trigger_ready_lights(self, duration: int = 1.5, blink_time=0.1):
+    def trigger_wifi_connecting_status(self, flash_speed: float = 0.09):
+        """ Triggers a single wave animation w/ all LEDs (that can be called repeatedly)
+            to indicate that the device is connecting to Wi-Fi. """
+        self.success_led.on()
+        sleep(flash_speed)
+        self.alert_led.on()
+        self.success_led.off()
+        sleep(flash_speed)
+        self.error_led.on()
+        self.alert_led.off()
+        sleep(flash_speed)
+        self.error_led.off()
+
+    def trigger_wifi_connection_failed(self):
+        """ Flashes the error LED repeatedly to indicate the Wi-Fi failed to connect. """
+        self._quick_flash_led_repeatedly(self.error_led, 3)
+
+    def trigger_ready_lights(self, blink_count: int = 6, blink_time: float = 0.1):
         """ Triggers a sequence w/ all LEDs to indicate that the app is ready. """
         self.success_led.blink(on_time=blink_time, off_time=blink_time)
         sleep(blink_time)
