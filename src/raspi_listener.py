@@ -15,10 +15,10 @@ class RasPiListener:
         self.callback = button_callback
 
         # Set GPIO pin numbers
-        self.toggle_like_button = gpio_pins['button_save_lib']
-        self.save_main_button = gpio_pins['button_save_main']
-        self.save_other_button = gpio_pins['button_save_other']
-        self.undo_last_button = gpio_pins['button_undo_save']
+        self.toggle_like_button = Button(gpio_pins['button_save_lib'])
+        self.save_main_button = Button(gpio_pins['button_save_main'])
+        self.save_other_button = Button(gpio_pins['button_save_other'])
+        self.undo_last_button = Button(gpio_pins['button_undo_save'])
 
         # Map the buttons to the actions
         self.toggle_like_button.when_pressed = self.toggle_like
