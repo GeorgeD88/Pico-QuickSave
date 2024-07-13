@@ -14,9 +14,9 @@ class RasPiNotifier:
 
     def __init__(self, gpio_pins: dict):
         # Set GPIO pin numbers
-        self.success_led = gpio_pins['led_success']
-        self.alert_led = gpio_pins['led_alert']
-        self.error_led = gpio_pins['led_error']
+        self.success_led = LED(gpio_pins['led_success'])
+        self.alert_led = LED(gpio_pins['led_alert'])
+        self.error_led = LED(gpio_pins['led_error'])
 
         # FIXME: maybe move the red (error) LED uses to yellow (alert) LED and then red is for app errors, like FileNotFound
 
@@ -25,27 +25,27 @@ class RasPiNotifier:
         self.trigger_ready_lights()
         pause()  # signal pause for RasPi to wait for inputs
 
-    def flash_led(self, triggering_led: LED, duration: int):
-        """ Triggers the given LED to flash for the specified duration. """
+    def _flash_led(self, flashing_led: LED, duration: float):
+        """ Flashes the given LED for the specified duration. """
         # TODO: check if the following is the most efficient way to do this,
         # * or if there's a function for this
-        triggering_led.on()
+        flashing_led.on()
         sleep(duration)
         triggering_led.off()
 
-    def trigger_song_saved_indicator(self, duration: int = DURATION):
+    def trigger_song_saved_success(self, duration: float = DURATION):
         """ Flashes the success LED to indicate that a song was saved. """
-        self.flash_led(self.success_led, duration)
+        self._flash_led(self.success_led, duration)
 
-    def trigger_duplicate_song_warning(self, duration: int = DURATION):
+    def trigger_duplicate_song_warning(self, duration: float = DURATION):
         """ Flashes the alert LED to warn that a duplicate song was attempted to be added. """
-        self.flash_led(self.error_led, duration)
+        self._flash_led(self.alert_led, duration)
 
-    def trigger_max_undo_warning(self, duration: int = DURATION):
+    def trigger_max_undo_warning(self, duration: float = DURATION):
         """ Flashes the alert LED to warn that only one undo is allowed per save. """
-        self.flash_led(self.error_led, duration)
+        self._flash_led(self.alert_led, duration)
 
-    def trigger_os_error(self, duration: int = DURATION):
+    def trigger_os_error(self):
         """ Flashes the error LED repeatedly to indicate an OS error was received. """
         # TODO: flash the error LED 4 times (total 1 sec)
         # Time for each individual flash (maybe for strictly the on time, or for the total on/off time)
@@ -56,11 +56,11 @@ class RasPiNotifier:
             self.flash_led(self.error_led, flash_time)
             sleep(0)  # TODO
 
-    def trigger_unexpected_os_error(self, duration: int = DURATION):
+    def trigger_unexpected_os_error(self, duration: float = DURATION):
         """ Flashes the __ to indicate an unexpected OS error was received. """
         pass
 
-    def trigger_critical_error(self, duration: int = DURATION):
+    def trigger_critical_error(self):
         """ Triggers a sequence w/ all LEDs to indicate a critical error and program shutdown. """
         # TODO idea: do the same flash as file_not_found_error but with all the LEDs,
         # and then hold them on for half a sec or something.
