@@ -1,6 +1,4 @@
-# Raspberry Pi
 from picozero import LED
-from signal import pause
 from time import sleep
 
 DURATION = 1  # Duration for standard indicators and warnings
@@ -18,6 +16,7 @@ class RasPiNotifier:
     def start_notifier(self):
         """ Starts the notifier by waiting for signals. """
         self.trigger_ready_lights()
+        # TODO: refactor to use interrupts, because micro python can't signal.pause
         pause()  # signal pause for RasPi to wait for inputs
 
     def _flash_led(self, flashing_led: LED, duration: float):
@@ -48,7 +47,7 @@ class RasPiNotifier:
         self._quick_flash_led_repeatedly(self.error_led, 4)
 
     def trigger_unexpected_os_error(self, duration: float = DURATION):
-        """ Flashes the __ to indicate an unexpected OS error was received. """
+        """ Flashes ____ to indicate an unexpected OS error was received. """
         # TODO:
         pass
 
@@ -59,12 +58,16 @@ class RasPiNotifier:
         # most importantly flash them a few times and then hold them
 
         # Flash all the LEDs repeatedly for half the duration
+        flash_speed, flash_count = 0.12, 3
+        self.error_led.blink(on_time=flash_speed, n=flash_count)
+        self.alert_led.blink(on_time=flash_speed, n=flash_count)
+        self.success_led.blink(on_time=flash_speed, n=flash_count, wait=True)
 
         # Hold all the LEDs on for half the duration
         self.error_led.on()
         self.alert_led.on()
         self.success_led.on()
-        sleep(duration/2)
+        sleep(0.7)
         self.error_led.off()
         self.alert_led.off()
         self.success_led.off()
