@@ -49,7 +49,7 @@ class QuickSaver:
             return None
         # Triggers notif if song was liked/saved
         elif result[1] is True:
-            self.notifier.trigger_song_saved_indicator()
+            self.notifier.trigger_song_saved_success()
 
         return result
 
@@ -68,7 +68,7 @@ class QuickSaver:
             return None
         # Song was successfully saved
         else:
-            self.notifier.trigger_song_saved_indicator()
+            self.notifier.trigger_song_saved_success()
 
         return result
 
