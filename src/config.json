@@ -13,7 +13,7 @@
         "led_success": 7,
         "led_alert": 15,
         "led_error": 20,
-        "button_save_lib": 10,
+        "button_toggle_like": 10,
         "button_save_main": 11,
         "button_save_other": 12,
         "button_undo_save": 13

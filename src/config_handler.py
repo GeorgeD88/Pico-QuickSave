@@ -15,7 +15,7 @@ EMPTY_CONFIG = {
         "led_save": 0,
         "led_alert": 0,
         "led_error": 0,
-        "button_save_lib": 0,
+        "button_toggle_like": 0,
         "button_save_main": 0,
         "button_save_other": 0,
         "button_undo_save": 0
