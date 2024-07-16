@@ -30,6 +30,15 @@ class RasPiNotifier:
         """ Repeatedly flashes the given LED for the specified number of times. """
         flashing_led.blink(on_time=flash_speed, n=flash_count, wait=wait)
 
+    def trigger_song_toggle_unlike(self, duration: float = DURATION):
+        """ Flashes the success and alert LED to indicate
+            that the song was unliked after toggling. """
+        self.success_led.on()
+        self.alert_led.on()
+        sleep(duration)
+        self.success_led.off()
+        self.alert_led.off()
+
     def trigger_song_saved_success(self, duration: float = DURATION):
         """ Flashes the success LED to indicate that a song was saved. """
         self._flash_led(self.success_led, duration)
