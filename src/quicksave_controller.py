@@ -51,9 +51,10 @@ class QuickSaveController:
         else:
             self.client.save_track(self.api_tokens, track_id)
 
+        # Negate is_saved status from before toggling to the status after toggling
         return track_id, not is_saved
 
-    def quick_save(self, playlist_id: str) -> str:
+    def quick_save(self, playlist_id: str) -> tuple[str, str]:
         """ Quick saves currently playing track to given playlist and user library, and stores details in last save. """
 
         # Get the currently playing track
@@ -74,7 +75,7 @@ class QuickSaveController:
 
         # Terminate the function if the track is already in the playlist (duplicate track)
         if track_id in playlist_tracks:
-            return IS_DUPE
+            return track_id, IS_DUPE
 
         # Add the track to the Spotify playlist and the local track list
         self.client.add_to_playlist(self.api_tokens, playlist_id, track_id)
