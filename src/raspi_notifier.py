@@ -42,6 +42,11 @@ class RasPiNotifier:
         """ Flashes the alert LED to warn that only one undo is allowed per save. """
         self._flash_led(self.alert_led, duration)
 
+    def trigger_no_song_playing_warning(self, duration: float = DURATION):
+        """ Flashes the alert LED repeatedly to warn that no song
+            is currently playing, so no song can be saved. """
+        self._quick_flash_led_repeatedly(self.alert_led, 3)
+
     def trigger_os_error(self):
         """ Flashes the error LED repeatedly to indicate an OS error was received. """
         self._quick_flash_led_repeatedly(self.error_led, 4)
