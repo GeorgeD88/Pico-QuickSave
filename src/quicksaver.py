@@ -38,6 +38,13 @@ class QuickSaver:
         # TODO: start spotify_client refreshing loop (prevents the program from closing)
         # self.controller.start_refresh_smthn
 
+    def stop_quicksaver(self):
+        self.log_quitting_app()
+        # TODO: figure out what cleanup needs to be done
+        # TODO: stop raspi listener/notifier loops
+        # TODO: stop SpotifyClient token refreshing loop
+        self.logger.close()
+
     def toggle_like(self) -> tuple[str, bool]:
         """ Toggles the currently playing track's library save (likes/unlikes track). """
 
@@ -126,9 +133,7 @@ class QuickSaver:
             result = self.undo_last_save()
         # Quits the app
         elif button_pressed is QUIT_APP:
-            self.log_quitting_app()
-            self.input_listener.stop_listener()
-            # TODO: stop SpotifyClient token refreshing loop
+            self.stop_quicksaver()
 
     def get_playlist_action(self, playlist_id: str) -> str:
         """ Gets the corresponding playlist label (Main/Other) based on the given playlist ID. """
