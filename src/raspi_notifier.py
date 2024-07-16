@@ -47,6 +47,11 @@ class RasPiNotifier:
         """ Flashes the success LED to indicate that a song was saved. """
         self._flash_led(self.success_led, duration)
 
+    def trigger_undo_save_success(self, duration: float = DURATION):
+        """ Flashes the success and alert LED simultaneously
+            to indicate that the last save was undoed. """
+        self._flash_multiple_leds([self.success_led, self.alert_led])
+
     def trigger_duplicate_song_warning(self, duration: float = DURATION):
         """ Flashes the alert LED to warn that a duplicate song was attempted to be added. """
         self._flash_led(self.alert_led, duration)
