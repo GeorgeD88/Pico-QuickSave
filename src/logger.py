@@ -11,18 +11,15 @@ class Logger:
 
     SPACES = {INFO: 4, WARNING: 1, ERROR: 3}
 
-    # keep `to_console` false and save to pi. when running on computer, manually pass `to_console=True`
+    # NOTE: keep `to_console` false when running on Pi. When running on computer, manually pass `to_console=True`
     def __init__(self, filename, to_console=False):
         self.filename = filename
         self.to_console = to_console
-        self.console_available = self.check_console()
+        # self.console_available = self.check_console()
         self.file = open(self.filename, 'a')  # Keep the file open
 
-    def check_console(self):
-        # Check if stdout is redirected or not, meaning there should
-        # FIXME: find another way to do this
-        # return os.isatty(sys.stdout.fileno())
-        pass
+    # def check_console(self):
+    # TODO: check if Pi has terminal output available in standard output
 
     def _log(self, level: str, msg: str, to_file: bool = True, to_console: bool = False):
         timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
@@ -56,11 +53,3 @@ class Logger:
         # Ensure the file is properly closed
         if self.file:
             self.file.close()
-
-# Example usage
-logger = Logger('logfile.txt')
-
-logger.error('Critical error')          # goes to file, and to console if available
-logger.info('song saved successfully!') # only goes to console if available
-
-logger.close()  # ! Don't forget to close the logger when done
