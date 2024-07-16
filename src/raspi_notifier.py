@@ -49,7 +49,7 @@ class RasPiNotifier:
 
     def trigger_undo_save_success(self, duration: float = DURATION):
         """ Flashes the success and alert LED simultaneously
-            to indicate that the last save was undoed. """
+            to indicate that the last save was undid. """
         self._flash_multiple_leds([self.success_led, self.alert_led])
 
     def trigger_duplicate_song_warning(self, duration: float = DURATION):
