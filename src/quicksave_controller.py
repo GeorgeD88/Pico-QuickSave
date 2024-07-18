@@ -29,6 +29,9 @@ class QuickSaveController:
         # Holds the last saved track and its playlist in a tuple (track_id, playlist_id)
         self.last_save = None
 
+    def start_access_token_refresh_loop(self):
+        self.client.start_access_token_refresh_loop()
+
     def toggle_like(self) -> tuple[str, bool]:
         """ Toggles currently playing track's library save (likes/unlikes track).
 
