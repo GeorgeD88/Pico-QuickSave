@@ -13,12 +13,6 @@ class RasPiNotifier:
         self.alert_led = LED(gpio_pins['led_alert'])
         self.error_led = LED(gpio_pins['led_error'])
 
-    def start_notifier(self):
-        """ Starts the notifier by waiting for signals. """
-        self.trigger_ready_lights()
-        # TODO: refactor to use interrupts, because micro python can't signal.pause
-        pause()  # signal pause for RasPi to wait for inputs
-
     def _flash_led(self, flashing_led: LED, duration: float):
         """ Flashes the given LED for the specified duration. """
         flashing_led.on()
