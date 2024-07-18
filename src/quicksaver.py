@@ -30,19 +30,20 @@ class QuickSaver:
         self.other_playlist_id = plist_ids['other_playlist']
 
     def start_quicksaver(self):
-        """ Starts running QuickSaver by starting
-            the input listener and notifier loops. """
-        # Start input listener and notifier
-        self.input_listener.start_listener()
-        self.notifier.start_notifier()
+        """ Starts running QuickSaver by starting the Spotify token refresh loop. """
+        self.notifier.trigger_ready_lights()
         # TODO: start spotify_client refreshing loop (prevents the program from closing)
-        # self.controller.start_refresh_smthn
+        self.logger.info('QuickSaver is ready, starting Spotify access token refresh loop')
+        self.controller.start_access_token_refresh_loop()
 
     def stop_quicksaver(self):
+        # NOTE: we can't really trigger this or run it when unplugging, but we'll still keep the code here
+        # maybe we can figure out how to trigger this by holding multiple buttons down
         self.log_quitting_app()
         # TODO: figure out what cleanup needs to be done
-        # TODO: stop raspi listener/notifier loops
         # TODO: stop SpotifyClient token refreshing loop
+        # LEDs signalling quicksaver stopping
+        self.notifier.clean_up_leds()
         self.logger.close()
 
     def toggle_like(self) -> tuple[str, bool]:
