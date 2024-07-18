@@ -13,6 +13,12 @@ class RasPiNotifier:
         self.alert_led = LED(gpio_pins['led_alert'])
         self.error_led = LED(gpio_pins['led_error'])
 
+    def clean_up_leds(self):
+        """ Cleans up the LEDs by closing each one. """
+        self.success_led.close()
+        self.alert_led.close()
+        self.error_led.close()
+
     def _flash_led(self, flashing_led: LED, duration: float):
         """ Flashes the given LED for the specified duration. """
         flashing_led.on()
