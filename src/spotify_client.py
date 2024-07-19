@@ -105,7 +105,7 @@ class SpotifyClient:
 
         # File not found error
         elif e.errno == errno.ENOENT:
-            log_string += f'{e.args[1]} {e.args[2]}'
+            log_string += f' {e.args[1]} {e.args[2]}'
         # Cannot allocate memory
         elif e.errno == errno.ENOMEM:
             log_string += ' <Cannot allocate memory> args: ' + ', '.join(e.args[1:])
