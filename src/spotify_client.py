@@ -82,39 +82,38 @@ class SpotifyClient:
         try:
             return try_func()
         except OSError as e:
-            # FIXME: probably add time to print statements, '[XX:XX:XX] error received'
-            print(f'[{errno.errorcode[e.errno]}] error received, handling accordingly...')
-            # Handle FileNotFoundError
-            if e.errno == errno.ENOENT:
-                self._handle_enoent_error(e)
-            # elif, TODO: OSError: -6
-            # e.errno == -6, seems to always be no wifi error
+            self.logger.error(f'error received [{errno.errorcode[e.errno]}] handling accordingly...')
+            self._handle_os_error(e)
+            # TODO: OSError: -6 (seems to always be no wifi error) can we use `e.errno == -6`?
 
-            # elif, [error 12] ENOMEM (memory error)
+    def _handle_os_error(self, e: OSError):
+        """ Handles OS errors that were safely caught. """
 
-            # Unexpected error
-            else:
-                self._handle_unexpected_error(e)
+        # Build log string and get notifier method (handle unexpected errors differently)
+        errorcode = errno.errorcode[e.errno] if e.errno in errno.errorcode else e.errno
+        log_string = f'received [{errorcode}]'
+        notify_error = self.notifier.trigger_os_error
 
-    # TODO: this can probably be changed to handle_os_error (expected error),
-    # if we don't end up adding anything that's specific to FileNotFoundErrors
-    def _handle_enoent_error(self, e: OSError):
-        """ Handles ENOENT errors that were safely caught (FileNotFoundError). """
-        print(f'[{errno.errorcode[e.errno]}]', e.args[1], e.args[2])
-        self.notifier.trigger_os_error()
-        self.teardown()
-        # self.notifier.trigger_critical_error()  # every os error is critical
-        # TODO: close app
+        # Unexpected error
+        if e.errno not in [errno.ENOENT, errno.ENOMEM]:
+            notify_error = self.notifier.trigger_unexpected_os_error
+            log_string += ' <unexpected>'
 
-    def _handle_unexpected_error(self, e: OSError):
-        """ Handles unexpected errors that were safely caught. """
-        print('Unexpected error received:')
-        self.notifier.trigger_unexpected_os_error()
-        # Unknown error, output it and log, close app, teardown, etc.
-        print('|'.join(e.args))
-        print('closing QuickSaver...')
-        self.notifier.trigger_critical_error()
-        # TODO: close app
+            # Add args to output if they exist
+            if len(e.args) > 1:
+                log_string += ' args: ' + ', '.join(e.args[1:])
+
+        # File not found error
+        elif e.errno == errno.ENOENT:
+            log_string += f'{e.args[1]} {e.args[2]}'
+        # Cannot allocate memory
+        elif e.errno == errno.ENOMEM:
+            log_string += ' <Cannot allocate memory> args: ' + ', '.join(e.args[1:])
+
+        # Log and notify error, then teardown and exit program
+        self.logger.error(log_string)
+        notify_error()
+        self.teardown()  # Cleans up LEDs, closes the logger, and exits the program
 
     def _validate_api_reply(self, api_call_name, api_reply, ok_status_list = [],
                             warn_status_list = [], raise_status_list = []):
