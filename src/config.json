@@ -1,7 +1,7 @@
 {
     "spotify": {
-        "client_id": "30772e8117e044d4b5b3806b78a55724",
-        "client_secret": "ee09bfd69a484a1bb5a4cd1db62121cf",
+        "client_id": "XXXXXXXXXXXXXXXXXXXXXXXX",
+        "client_secret": "XXXXXXXXXXXXXXXXXXXXXXXX",
         "redirect_uri": "http://localhost:8888/callback"
     },
     "playlists": {
@@ -20,20 +20,16 @@
     },
     "wlan": [
         {
-            "ssid": "Roy & george 2",
-            "password": "d0uj@iji@21"
+            "ssid": "1st priority Wi-Fi",
+            "password": "XXXXXXXX"
         },
         {
-            "ssid": "Makaveli",
-            "password": "Sh3llH@cks"
+            "ssid": "2nd priority Wi-Fi",
+            "password": "XXXXXXXX"
         },
         {
-            "ssid": "Samir",
-            "password": "456@#776"
-        },
-        {
-            "ssid": "samir1",
-            "password": "456@#776"
+            "ssid": "Nth priority Wi-Fi",
+            "password": "XXXXXXXX"
         }
     ]
 }
