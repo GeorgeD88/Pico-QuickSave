@@ -16,10 +16,13 @@ from machine import Pin
 import spotify_api
 import network
 import ujson
+import errno
 import time
 import gc
 # import Tiny-JSON; this is also available if needed for whatever reason
 
+REFRESH_INTERVAL = 20 * 60  # Refresh tokens every 20 minutes (1200 seconds)
+RETRY_INTERVAL = 10 * 60  # Retries refreshing every 10 minutes (600 seconds)
 SCOPES = [
     "user-read-playback-state",     # Get current playback
     "user-read-currently-playing",  # Get current user playing track
@@ -56,18 +59,19 @@ class SpotifyClient:
         self._load_api_creds()
         self.notifier = notifier
         self.logger = logger
+        # self._refresh_access_token()  # Make initial refresh of access tokens
 
     def _load_cache_tokens(self):
         """ Loads the access and refresh tokens from the cache file. """
-        cache_tokens = self._except_enoent_error(cache.get_token_cache)
+        cache_tokens = self._except_os_error(cache.get_token_cache)
         self.api_tokens = {
             'access_token': cache_tokens['access_token'],
-            'refresh_token': cache_tokens['refresh_token']
+          'refresh_token': cache_tokens['refresh_token']
         }
 
     def _load_api_creds(self):
         """ Loads the Spotify API credentials from the config file. """
-        config_file = self._except_enoent_error(config.get_spotify_creds)
+        config_file = self._except_os_error(config.get_spotify_creds)
         self.client_id = config_file['client_id']
         self.client_secret = config_file['client_secret']
         self.redirect_uri = config_file['redirect_uri']
@@ -75,13 +79,18 @@ class SpotifyClient:
     def _except_os_error(self, try_func):
         """ Tries to run the given the function while catching OS errors. """
         try:
-            try_func()
+            return try_func()
         except OSError as e:
             # FIXME: probably add time to print statements, '[XX:XX:XX] error received'
             print(f'[{errno.errorcode[e.errno]}] error received, handling accordingly...')
             # Handle FileNotFoundError
             if e.errno == errno.ENOENT:
                 self._handle_enoent_error(e)
+            # elif, TODO: OSError: -6
+            # e.errno == -6, seems to always be no wifi error
+
+            # elif, [error 12] ENOMEM (memory error)
+
             # Unexpected error
             else:
                 self._handle_unexpected_error(e)
@@ -107,10 +116,10 @@ class SpotifyClient:
         self.notifier.trigger_critical_error()
         # TODO: close app
 
-
     def _validate_api_reply(self, api_call_name, api_reply, ok_status_list = [],
                             warn_status_list = [], raise_status_list = []):
         """ Validates API response based on provided statuses (ok, warn, raise). """
+        # TODO: switch all prints to logs
         print("{} status received: {}".format(api_call_name, api_reply['status_code']))
 
         # Status code is ok
@@ -145,10 +154,9 @@ class SpotifyClient:
         self.api_tokens['access_token'] = api_tokens['access_token'],
         self.api_tokens['refresh_token'] = api_tokens['refresh_token'],
 
-    def _refresh_access_token(self):
-        """ Refreshes the Spotify API access token,
-            updates the refresh token if changed,
-            and updates the cache file. """
+    def _refresh_access_token(self) -> bool:
+        """ Refreshes the Spotify API access token, updates the refresh token if changed,
+            updates the cache file, and returns whether the tokens were successfully refreshed. """
 
         r = spotify_api.refresh_access_token(self.api_tokens, self.client_id, self.client_secret)
 
@@ -157,7 +165,7 @@ class SpotifyClient:
         if 'timestamp' in self.api_tokens:
             warn_status_list.append(0)
         if not self._validate_api_reply("refresh", r, ok_status_list = [200], warn_status_list = warn_status_list):
-            return self.api_tokens
+            return False
 
         print("refreshed api tokens received")
         new_api_tokens = r['json']
@@ -175,8 +183,44 @@ class SpotifyClient:
         cache.set_token_cache(new_api_tokens)
         self.api_tokens['access_token'] = new_api_tokens['access_token'],
 
-        # NOTE: this and _get_api_tokens() were originally written to return
-        # the tokens in addition to writing them to file, but i don't think that's necessary
+        return True
+
+    def start_access_token_refresh_loop(self):
+        """ Starts a loop that refreshes the Spotify access tokens
+            every 20 minutes and retries upon failures. """
+
+        last_refresh_time = time.time()
+
+        while True:
+            curr_time = time.time()
+
+            # Refresh tokens every 20 minutes
+            if curr_time - last_refresh_time >= REFRESH_INTERVAL:
+                # Retry every 10 minutes if the access tokens fails to refresh
+                if self._refresh_access_token() is False:
+                    curr_time = self.start_retry_token_refresh_loop(curr_time)
+                last_refresh_time = curr_time
+
+            # Sleep to reduce CPU usage
+            time.sleep(60)
+
+    def start_retry_token_refresh_loop(self, failed_refresh_time: int) -> int:
+        """ Starts a loop that retries to refresh the Spotify access tokens every 10 minutes
+            until it is successful, and returns the time of the successful refresh. """
+        last_refresh_time = failed_refresh_time
+
+        while True:
+            curr_time = time.time()
+
+            # Retry to refresh tokens every 10 minutes
+            if curr_time - last_refresh_time >= RETRY_INTERVAL:
+                # Return the time of the token refresh if it's successful
+                if self._refresh_access_token() is True:
+                    return curr_time
+                last_refresh_time = curr_time
+
+            # Sleep to reduce CPU usage
+            time.sleep(60)
 
     def get_playback_state(self):
         """ Gets information about the user's current playback state. """
