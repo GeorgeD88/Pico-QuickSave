@@ -77,9 +77,13 @@ def get_log_filename() -> str:
     """ Retrieves and returns the log filename. """
     return get_config_value('log_filename')
 
-def get_gpio_pin_numbers() -> str:
+def get_gpio_pin_numbers() -> dict:
     """ Retrieves and returns the GPIO pin numbers. """
     return get_config_value('gpio_pins')
+
+def get_wlan_details() -> dict:
+    """ Retrieves and returns the wlan network details. """
+    return get_config_value('wlan')
 
 # TODO: continue rewriting the handler for the config file
 def get_access_token() -> str:
