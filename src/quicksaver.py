@@ -3,6 +3,7 @@ from raspi_listener import RasPiListener
 from raspi_notifier import RasPiNotifier
 import config_handler as config
 from logger import Logger
+from sys import exit
 import utils
 
 # Constants
@@ -27,7 +28,7 @@ class QuickSaver:
         self.input_listener = RasPiListener(self.process_input,
                                             config.get_gpio_pin_numbers())
         self.notifier = RasPiNotifier(config.get_gpio_pin_numbers())
-        self.logger = Logger(config.get_log_filename(), to_console=True)
+        self.logger = Logger(config.get_log_filename())  # Set to_console=True when a terminal is available
         self.controller = QuickSaveController(self.main_playlist_id, self.other_playlist_id,
                                               self.notifier, self.logger, self.stop_quicksaver)
 
@@ -47,6 +48,7 @@ class QuickSaver:
         # LEDs signalling quicksaver stopping
         self.notifier.clean_up_leds()
         self.logger.close()
+        exit()
 
     def toggle_like(self) -> tuple[str, bool]:
         """ Toggles the currently playing track's library save (likes/unlikes track). """
