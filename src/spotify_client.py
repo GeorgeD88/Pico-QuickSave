@@ -59,7 +59,7 @@ class SpotifyClient:
         self._load_api_creds()
         self.notifier = notifier
         self.logger = logger
-        # self._refresh_access_token()  # Make initial refresh of access tokens
+        self._refresh_access_token()  # Make initial refresh of access tokens
 
     def _load_cache_tokens(self):
         """ Loads the access and refresh tokens from the cache file. """
@@ -192,6 +192,10 @@ class SpotifyClient:
         last_refresh_time = time.time()
 
         while True:
+            # Deal with memory (code from vergogh)
+            # gc.collect()
+            # gc.threshold(gc.mem_free() // 4 + gc.mem_alloc())
+
             curr_time = time.time()
 
             # Refresh tokens every 20 minutes
