@@ -19,8 +19,8 @@ class QuickSaveController:
         self.other_playlist_id = other_playlist_id
 
         # Keep local record of playlist contents to avoid adding duplicate songs
-        self.main_plist_tracks = set()#self.client.get_playlist_tracks(main_playlist_id))
-        self.other_plist_tracks = set()#self.client.get_playlist_tracks(other_playlist_id))
+        self.main_plist_tracks = set(self.client.get_playlist_tracks(main_playlist_id))
+        self.other_plist_tracks = set(self.client.get_playlist_tracks(other_playlist_id))
 
         # Holds the last saved track and its playlist in a tuple (track_id, playlist_id)
         self.last_save = None
