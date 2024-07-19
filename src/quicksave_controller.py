@@ -23,8 +23,8 @@ class QuickSaveController:
         self.other_playlist_id = other_playlist_id
 
         # Keep local record of playlist contents to avoid adding duplicate songs
-        self.main_plist_tracks = set(self.client.get_playlist_tracks(main_playlist_id))
-        self.other_plist_tracks = set(self.client.get_playlist_tracks(other_playlist_id))
+        self.main_plist_tracks = set()#self.client.get_playlist_tracks(main_playlist_id))
+        self.other_plist_tracks = set()#self.client.get_playlist_tracks(other_playlist_id))
 
         # Holds the last saved track and its playlist in a tuple (track_id, playlist_id)
         self.last_save = None
@@ -39,20 +39,20 @@ class QuickSaveController:
             tuple[str, bool]: Returns the ID of the currently playing track, and whether it's saved now.
         """
 
-        track_id = self.client.get_currently_playing(self.api_tokens)
+        track_id = self.client.get_currently_playing()
 
         # Terminate the function if no track is currently playing
         if track_id is None:
             return None
 
         # Check if the track is saved to the library
-        is_saved = self.client.is_track_saved(self.api_tokens, track_id)
+        is_saved = self.client.is_track_saved(track_id)
 
         # Toggle the track's "liked" status
         if is_saved:
-            self.client.remove_track(self.api_tokens, track_id)
+            self.client.remove_track(track_id)
         else:
-            self.client.save_track(self.api_tokens, track_id)
+            self.client.save_track(track_id)
 
         # Negate is_saved status from before toggling to the status after toggling
         return track_id, not is_saved
@@ -61,7 +61,7 @@ class QuickSaveController:
         """ Quick saves currently playing track to given playlist and user library, and stores details in last save. """
 
         # Get the currently playing track
-        track_id = self.client.get_currently_playing(self.api_tokens)
+        track_id = self.client.get_currently_playing()
 
         # Terminate the function if no track is currently playing
         if track_id is None:
@@ -71,7 +71,7 @@ class QuickSaveController:
         self.last_save = (track_id, playlist_id)
 
         # Save the track to the library (likes song)
-        self.client.save_track(self.api_tokens, track_id)
+        self.client.save_track(track_id)
 
         # Get the reference to the respective playlist's local track list
         playlist_tracks = self.get_local_track_list(playlist_id)
@@ -81,7 +81,7 @@ class QuickSaveController:
             return track_id, IS_DUPE
 
         # Add the track to the Spotify playlist and the local track list
-        self.client.add_to_playlist(self.api_tokens, playlist_id, track_id)
+        self.client.add_to_playlist(playlist_id, track_id)
         playlist_tracks.add(track_id)
 
         return self.last_save
@@ -97,8 +97,8 @@ class QuickSaveController:
         (track_id, playlist_id), self.last_save = self.last_save, None
 
         # Remove the track from the user's library, the playlist, and the local track list
-        self.client.remove_track(self.api_tokens, track_id)
-        self.client.remove_from_playlist(self.api_tokens, playlist_id, track_id)
+        self.client.remove_track(track_id)
+        self.client.remove_from_playlist(playlist_id, track_id)
         self.get_local_track_list(playlist_id).remove(track_id)
 
         return track_id, playlist_id
