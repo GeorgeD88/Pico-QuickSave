@@ -29,7 +29,7 @@ class QuickSaver:
         self.notifier = RasPiNotifier(config.get_gpio_pin_numbers())
         self.logger = Logger(config.get_log_filename(), to_console=True)
         self.controller = QuickSaveController(self.main_playlist_id, self.other_playlist_id,
-                                              self.notifier, self.logger)
+                                              self.notifier, self.logger, self.stop_quicksaver)
 
     def start_quicksaver(self):
         """ Starts running QuickSaver by starting the Spotify token refresh loop. """

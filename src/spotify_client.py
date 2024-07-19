@@ -54,11 +54,12 @@ handle the refreshing access token and such because we're not using a wrapper li
 
 class SpotifyClient:
 
-    def __init__(self, notifier, logger):
+    def __init__(self, notifier, logger, teardown_func):
         self._load_cache_tokens()
         self._load_api_creds()
         self.notifier = notifier
         self.logger = logger
+        self.teardown = teardown_func  # Teardown function from QuickSaver
         self._refresh_access_token()  # Make initial refresh of access tokens
 
     def _load_cache_tokens(self):
@@ -101,9 +102,8 @@ class SpotifyClient:
         """ Handles ENOENT errors that were safely caught (FileNotFoundError). """
         print(f'[{errno.errorcode[e.errno]}]', e.args[1], e.args[2])
         self.notifier.trigger_os_error()
-        # TODO: log to a file w/ time
-        # TODO: figure out if I need a teardown procedure
-        self.notifier.trigger_critical_error()
+        self.teardown()
+        # self.notifier.trigger_critical_error()  # every os error is critical
         # TODO: close app
 
     def _handle_unexpected_error(self, e: OSError):
