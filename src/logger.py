@@ -22,7 +22,17 @@ class Logger:
     # TODO: check if Pi has terminal output available in standard output
 
     def _log(self, level: str, msg: str, to_file: bool = True, to_console: bool = False):
-        timestamp = time.strftime("%Y-%m-%d %H:%M:%S", time.localtime())
+
+        # Get the local date and time and manually format it
+        local_time = time.localtime()
+        timestamp = "{:04d}-{:02d}-{:02d} {:02d}:{:02d}:{:02d}".format(
+            local_time[0],  # year
+            local_time[1],  # month
+            local_time[2],  # day
+            local_time[3],  # hour
+            local_time[4],  # minute
+            local_time[5]   # second
+        )
         log_entry = f"{timestamp} [{level}]{self._spacing(level)}{msg}\n"
 
         # Write to file if required and flush
@@ -31,7 +41,7 @@ class Logger:
             self.file.flush()
 
         # Optionally print to console
-        if to_console is True and self.console_available is True:
+        if to_console is True:# and self.console_available is True:
             print(log_entry, end='')
 
     def _spacing(self, level: str):
