@@ -22,6 +22,7 @@ class QuickSaver:
         plist_ids = config.get_playlist_ids()
         self.main_playlist_id = plist_ids['main_playlist']
         self.other_playlist_id = plist_ids['other_playlist']
+        # TODO: add function that checks if playlists exist in spotify, otherwise create them
 
         # Initialize all components of the QuickSaver application
         print('initializing input listener, controller, and notifier...')
