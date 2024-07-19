@@ -15,19 +15,21 @@ class QuickSaver:
 
     def __init__(self):
 
-        # Initialize all components of the QuickSaver application
-        print('initializing input listener, controller, and notifier...')
-        self.input_listener = RasPiListener(self.process_input,
-                                            config.get_gpio_pin_numbers())
-        self.notifier = RasPiNotifier(config.get_gpio_pin_numbers())
-        self.logger = Logger(config.get_log_filename())
-        self.controller = QuickSaveController(main_playlist_id, other_playlist_id,
-                                              self.notifier, self.logger)
+        # TODO: improve the multiple calls to config by only loading it once
 
         # Set the playlist IDs
         plist_ids = config.get_playlist_ids()
         self.main_playlist_id = plist_ids['main_playlist']
         self.other_playlist_id = plist_ids['other_playlist']
+
+        # Initialize all components of the QuickSaver application
+        print('initializing input listener, controller, and notifier...')
+        self.input_listener = RasPiListener(self.process_input,
+                                            config.get_gpio_pin_numbers())
+        self.notifier = RasPiNotifier(config.get_gpio_pin_numbers())
+        self.logger = Logger(config.get_log_filename(), to_console=True)
+        self.controller = QuickSaveController(self.main_playlist_id, self.other_playlist_id,
+                                              self.notifier, self.logger)
 
     def start_quicksaver(self):
         """ Starts running QuickSaver by starting the Spotify token refresh loop. """
